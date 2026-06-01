@@ -1,0 +1,45 @@
+{
+  "name": "uptimer",
+  "private": true,
+  "version": "0.1.0",
+  "license": "MIT",
+  "type": "module",
+  "engines": {
+    "node": ">=22.14.0"
+  },
+  "scripts": {
+    "build:web": "vite build --config web/vite.config.ts",
+    "deploy": "npm run build:web && wrangler deploy",
+    "lint": "eslint src/ web/src/",
+    "typecheck": "tsc -p tsconfig.json --noEmit && vue-tsc -p web/tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@tanstack/vue-query": "^5.100.0",
+    "drizzle-orm": "^0.45.2",
+    "hono": "^4.12.0",
+    "p-limit": "^7.0.0",
+    "pinia": "^3.0.4",
+    "vue": "^3.5.0",
+    "vue-router": "^4.6.0",
+    "zod": "^3.25.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20260530.0",
+    "@eslint/js": "^9.39.0",
+    "@types/node": "^22.19.0",
+    "@vitejs/plugin-vue": "^6.0.0",
+    "eslint": "^9.39.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-vue": "^10.9.1",
+    "globals": "^15.15.0",
+    "prettier": "^3.8.0",
+    "sass": "^1.100.0",
+    "typescript": "^5.9.0",
+    "typescript-eslint": "^8.60.0",
+    "vite": "^8.0.0",
+    "vite-plugin-compression": "^0.5.1",
+    "vue-eslint-parser": "^10.4.0",
+    "vue-tsc": "^2.2.12",
+    "wrangler": "^4.95.0"
+  }
+}
