@@ -142,50 +142,116 @@ function asString(vars: Record<string, unknown>, path: string): string {
   }
 }
 
+type Locale = 'en' | 'zh-CN' | 'zh-TW';
+
+type MessageMap = {
+  'monitor.down': (name: string, target: string, err: string) => string;
+  'monitor.up': (name: string, target: string) => string;
+  'incident.created': (title: string, impact: string) => string;
+  'incident.updated': (title: string, msg: string) => string;
+  'incident.resolved': (title: string) => string;
+  'maintenance.started': (title: string) => string;
+  'maintenance.ended': (title: string) => string;
+  'test.ping': () => string;
+  default: (ev: string) => string;
+};
+
+const messagesByLocale: Record<Locale, MessageMap> = {
+  en: {
+    'monitor.down': (name, target, err) =>
+      `Monitor DOWN: ${name}${target ? ` (${target})` : ''}${err ? `\nError: ${err}` : ''}`,
+    'monitor.up': (name, target) =>
+      `Monitor UP: ${name}${target ? ` (${target})` : ''}`,
+    'incident.created': (title, impact) =>
+      `Incident created: ${title}${impact ? ` (impact: ${impact})` : ''}`,
+    'incident.updated': (title, msg) =>
+      `Incident updated: ${title}${msg ? `\n${msg}` : ''}`,
+    'incident.resolved': (title) =>
+      `Incident resolved: ${title}`,
+    'maintenance.started': (title) =>
+      `Maintenance started: ${title}`,
+    'maintenance.ended': (title) =>
+      `Maintenance ended: ${title}`,
+    'test.ping': () => 'FlecStatus test notification',
+    default: (ev) => ev ? `FlecStatus event: ${ev}` : 'FlecStatus notification',
+  },
+  'zh-CN': {
+    'monitor.down': (name, target, err) =>
+      `监控离线：${name}${target ? `（${target}）` : ''}${err ? `\n错误：${err}` : ''}`,
+    'monitor.up': (name, target) =>
+      `监控恢复：${name}${target ? `（${target}）` : ''}`,
+    'incident.created': (title, impact) =>
+      `事件创建：${title}${impact ? `（影响：${impact}）` : ''}`,
+    'incident.updated': (title, msg) =>
+      `事件更新：${title}${msg ? `\n${msg}` : ''}`,
+    'incident.resolved': (title) =>
+      `事件已解决：${title}`,
+    'maintenance.started': (title) =>
+      `维护开始：${title}`,
+    'maintenance.ended': (title) =>
+      `维护结束：${title}`,
+    'test.ping': () => 'FlecStatus 测试通知',
+    default: (ev) => ev ? `FlecStatus 事件：${ev}` : 'FlecStatus 通知',
+  },
+  'zh-TW': {
+    'monitor.down': (name, target, err) =>
+      `監控離線：${name}${target ? `（${target}）` : ''}${err ? `\n錯誤：${err}` : ''}`,
+    'monitor.up': (name, target) =>
+      `監控恢復：${name}${target ? `（${target}）` : ''}`,
+    'incident.created': (title, impact) =>
+      `事件建立：${title}${impact ? `（影響：${impact}）` : ''}`,
+    'incident.updated': (title, msg) =>
+      `事件更新：${title}${msg ? `\n${msg}` : ''}`,
+    'incident.resolved': (title) =>
+      `事件已解決：${title}`,
+    'maintenance.started': (title) =>
+      `維護開始：${title}`,
+    'maintenance.ended': (title) =>
+      `維護結束：${title}`,
+    'test.ping': () => 'FlecStatus 測試通知',
+    default: (ev) => ev ? `FlecStatus 事件：${ev}` : 'FlecStatus 通知',
+  },
+};
+
 export function defaultMessageForEvent(
   eventType: NotificationEventType | string,
   vars: Record<string, unknown>,
+  locale?: string,
 ): string {
+  const loc: Locale = locale === 'en' || locale === 'zh-TW' ? locale : 'zh-CN';
+  const msgs = messagesByLocale[loc];
+
   switch (eventType) {
-    case 'monitor.down': {
-      const name = asString(vars, 'monitor.name');
-      const target = asString(vars, 'monitor.target');
-      const err = asString(vars, 'state.error');
-      return `Monitor DOWN: ${name}${target ? ` (${target})` : ''}${err ? `\nError: ${err}` : ''}`;
-    }
-    case 'monitor.up': {
-      const name = asString(vars, 'monitor.name');
-      const target = asString(vars, 'monitor.target');
-      return `Monitor UP: ${name}${target ? ` (${target})` : ''}`;
-    }
-    case 'incident.created': {
-      const title = asString(vars, 'incident.title');
-      const impact = asString(vars, 'incident.impact');
-      return `Incident created: ${title}${impact ? ` (impact: ${impact})` : ''}`;
-    }
-    case 'incident.updated': {
-      const title = asString(vars, 'incident.title');
-      const msg = asString(vars, 'update.message');
-      return `Incident updated: ${title}${msg ? `\n${msg}` : ''}`;
-    }
-    case 'incident.resolved': {
-      const title = asString(vars, 'incident.title');
-      return `Incident resolved: ${title}`;
-    }
-    case 'maintenance.started': {
-      const title = asString(vars, 'maintenance.title');
-      return `Maintenance started: ${title}`;
-    }
-    case 'maintenance.ended': {
-      const title = asString(vars, 'maintenance.title');
-      return `Maintenance ended: ${title}`;
-    }
-    case 'test.ping': {
-      return 'Uptimer test notification';
-    }
-    default: {
-      const ev = asString(vars, 'event');
-      return ev ? `Uptimer event: ${ev}` : 'Uptimer notification';
-    }
+    case 'monitor.down':
+      return msgs['monitor.down'](
+        asString(vars, 'monitor.name'),
+        asString(vars, 'monitor.target'),
+        asString(vars, 'state.error'),
+      );
+    case 'monitor.up':
+      return msgs['monitor.up'](
+        asString(vars, 'monitor.name'),
+        asString(vars, 'monitor.target'),
+      );
+    case 'incident.created':
+      return msgs['incident.created'](
+        asString(vars, 'incident.title'),
+        asString(vars, 'incident.impact'),
+      );
+    case 'incident.updated':
+      return msgs['incident.updated'](
+        asString(vars, 'incident.title'),
+        asString(vars, 'update.message'),
+      );
+    case 'incident.resolved':
+      return msgs['incident.resolved'](asString(vars, 'incident.title'));
+    case 'maintenance.started':
+      return msgs['maintenance.started'](asString(vars, 'maintenance.title'));
+    case 'maintenance.ended':
+      return msgs['maintenance.ended'](asString(vars, 'maintenance.title'));
+    case 'test.ping':
+      return msgs['test.ping']();
+    default:
+      return msgs['default'](asString(vars, 'event'));
   }
 }

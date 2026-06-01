@@ -448,6 +448,7 @@ export interface CustomWebhookChannelConfig {
     | 'maintenance.ended'
     | 'test.ping'
   >;
+  locale?: 'en' | 'zh-CN' | 'zh-TW';
   signing?: {
     enabled: boolean;
     secret_ref: string;

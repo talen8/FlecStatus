@@ -121,7 +121,7 @@ function buildTemplateContext(args: {
     timestamp: args.now,
   };
 
-  const defaultMessage = defaultMessageForEvent(args.eventType, baseVars);
+  const defaultMessage = defaultMessageForEvent(args.eventType, baseVars, args.channel.config.locale);
 
   const message = args.channel.config.message_template
     ? renderStringTemplate(args.channel.config.message_template, {

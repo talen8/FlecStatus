@@ -109,6 +109,23 @@ Fork 本仓库到你的 Github 账号里
 
 在 Worker → 域 中添加。
 
+## 通知变量
+
+配置通知渠道时，负载模板（`payload_template`）和消息模板（`message_template`）支持模板变量。
+
+| 通用变量 | 说明 |
+|---|---|
+| `{{event}}` | 事件类型，如 `monitor.down`、`incident.created` |
+| `{{event_id}}` | 事件唯一键 |
+| `{{timestamp}}` | Unix 秒级时间戳 |
+| `{{message}}` | 消息内容（受「消息模板」字段影响） |
+| `{{default_message}}` | 系统默认消息（根据事件类型自动生成） |
+| `{{channel.id}}` | 通知渠道 ID |
+| `{{channel.name}}` | 通知渠道名称 |
+| `{{payload}}` | 原始 payload 整体 |
+
+完整变量列表见 [Webhook 通知模板变量](docs/webhook-template-variables.md)。
+
 ## 目录结构
 
 ```

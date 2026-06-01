@@ -56,6 +56,7 @@ const headersJson = ref(initialConfig?.headers ? JSON.stringify(initialConfig.he
 const payloadTemplateJson = ref(initialConfig?.payload_template ? JSON.stringify(initialConfig.payload_template, null, 2) : '')
 const signingEnabled = ref(initialConfig?.signing?.enabled ?? false)
 const signingSecretRef = ref(initialConfig?.signing?.secret_ref ?? '')
+const locale = ref(initialConfig?.locale ?? 'zh-CN')
 
 // 验证
 type ParseResult = { ok: true } | { ok: false; error: string }
@@ -121,6 +122,7 @@ function handleSubmit() {
   if (messageTemplate.value.trim()) config.message_template = messageTemplate.value.trim()
   if (payloadTemplateJson.value.trim()) config.payload_template = JSON.parse(payloadTemplateJson.value)
   if (enabledEvents.value.length > 0) config.enabled_events = enabledEvents.value
+  if (locale.value !== 'zh-CN') config.locale = locale.value
   if (signingEnabled.value && signingSecretRef.value.trim()) {
     config.signing = { enabled: true, secret_ref: signingSecretRef.value.trim() }
   }
@@ -188,9 +190,19 @@ function handleSubmit() {
     </div>
 
     <!-- 通用字段 -->
-    <div class="channel-form__field">
-      <label class="channel-form__label">{{ t('admin_channels.timeout') }}</label>
-      <input v-model.number="timeoutMs" class="channel-form__input channel-form__input--sm" type="number" min="1000" />
+    <div class="channel-form__row">
+      <div class="channel-form__field">
+        <label class="channel-form__label">{{ t('admin_channels.timeout') }}</label>
+        <input v-model.number="timeoutMs" class="channel-form__input channel-form__input--sm" type="number" min="1000" />
+      </div>
+      <div class="channel-form__field">
+        <label class="channel-form__label">{{ t('admin_channels.locale') }}</label>
+        <select v-model="locale" class="channel-form__select">
+          <option value="zh-CN">简体中文</option>
+          <option value="zh-TW">繁體中文</option>
+          <option value="en">English</option>
+        </select>
+      </div>
     </div>
 
     <div class="channel-form__field">
@@ -211,7 +223,7 @@ function handleSubmit() {
             :checked="enabledEvents.includes(evt)"
             @change="toggleEvent(evt)"
           />
-          <span>{{ t((eventLabelKey[evt] ?? evt) as any) }}</span>
+          <span>{{ t((eventLabelKey[evt] ?? evt) as any) }} <code>{{ evt }}</code></span>
         </label>
       </div>
     </div>
@@ -321,6 +333,12 @@ function handleSubmit() {
 
   input[type="checkbox"] {
     flex-shrink: 0;
+  }
+
+  code {
+    font-size: 0.625rem;
+    color: var(--color-text-secondary);
+    opacity: 0.7;
   }
 }
 

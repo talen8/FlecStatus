@@ -107,6 +107,9 @@ export const customWebhookChannelConfigSchema = z
     // 如果省略，该渠道将接收所有事件。
     enabled_events: z.array(notificationEventTypeSchema).min(1).optional(),
 
+    // 通知消息语言，默认 zh-CN。
+    locale: z.enum(['en', 'zh-CN', 'zh-TW']).optional(),
+
     signing: webhookSigningSchema.optional(),
   })
   .superRefine((val, ctx) => {
