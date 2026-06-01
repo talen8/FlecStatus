@@ -84,7 +84,7 @@ Fork 本仓库到你的 Github 账号里
 
 | 配置项 | 值 |
 |--------|-----|
-| **生产分支** | `main` |
+| **项目名称** | `flecstatus` |
 | **构建命令** | `npm install` |
 | **部署命令** | `npm run deploy` |
 
